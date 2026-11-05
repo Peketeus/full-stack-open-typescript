@@ -15,6 +15,31 @@ interface Summary {
     averageTime : number;
 }
 
+interface Exercice {
+    targetHours : number;
+    hours : number[];
+}
+
+const parseExercice = (args: string[]): Exercice => {
+    const targetHours = Number(args[2]);
+
+    if (Number.isNaN(targetHours)) {
+        throw new Error('Provided values were not numbers!');
+    }
+
+    const hours: number[] = [];
+
+    args.slice(3).forEach(arg => {
+        if (!isNaN(Number(arg))) {
+            hours.push(Number(arg))
+        } else {
+            throw new Error('Provided values were not numbers!');
+        }
+    });
+
+    return { targetHours, hours}
+}
+
 const calculateExercises = (weekHours: number[], target: number): Summary => {
     const periodLength = weekHours.length;
     let trainingDays = 0;
@@ -57,5 +82,13 @@ const calculateExercises = (weekHours: number[], target: number): Summary => {
     }
 }
 
-const hours = [3, 0, 2, 4.5, 0, 3, 1];
-console.log(calculateExercises(hours, 2));
+try {
+    const {targetHours, hours} = parseExercice(process.argv);
+    console.log(calculateExercises(hours, targetHours));
+} catch (error: unknown) {
+    let errorMessage = 'Something bad happened.'
+    if (error instanceof Error) {
+        errorMessage += ' Error: ' + error.message;
+    }
+  console.log(errorMessage);
+}
