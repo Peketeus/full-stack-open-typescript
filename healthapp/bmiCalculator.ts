@@ -1,48 +1,38 @@
-interface Values {
-    value1 : number;
-    value2 : number;
-}
+import { pathToFileURL } from 'node:url';
 
-const parseArguments = (args: string[]): Values => {
-    if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
-        return {
-            value1: Number(args[2]),
-            value2: Number(args[3])
-        }
-    } else {
-        throw new Error('Provided values were not numbers!');
+const parseArguments = (args: string[]): { height: number; weight: number } => {
+    const height = Number(args[2]);
+    const weight = Number(args[3]);
+
+    if (!Number.isFinite(height) || !Number.isFinite(weight) || height <= 0 || weight <= 0) {
+        throw new Error('Numbers must be positive values');
     }
-}
 
-const bmiCalculator = (height: number, mass: number) => {
-    let bmi = mass / (height / 100) ** 2;
+    return { height, weight };
+};
 
-    if (bmi < 16.0) {
-        console.log('Underweight (Severe thinness)');
-    } else if (bmi < 17.0) {
-        console.log('Underweight (Moderate thinness)');
-    } else if (bmi < 18.5) {
-        console.log('Underweight (Mild thinness)');
-    } else if (bmi < 25.0) {
-        console.log('Normal range');
-    } else if (bmi < 30.0) {
-        console.log('Overweight');
-    } else if (bmi < 35.0) {
-        console.log('Obese (Class I)');
-    } else if (bmi < 40.0) {
-        console.log('Obese (Class II)');
-    } else {
-        console.log('Obese (Class III)');
+export const bmiValue = (height: number, weight: number): string => {
+  const bmi = weight / (height / 100) ** 2;
+
+  if (bmi < 16) return 'Underweight (Severe thinness)';
+  if (bmi < 17) return 'Underweight (Moderate thinness)';
+  if (bmi < 18.5) return 'Underweight (Mild thinness)';
+  if (bmi < 25) return 'Normal range';
+  if (bmi < 30) return 'Overweight';
+  if (bmi < 35) return 'Obese (Class I)';
+  if (bmi < 40) return 'Obese (Class II)';
+  return 'Obese (Class III)';
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    try {
+        const { height, weight } = parseArguments(process.argv);
+        console.log(bmiValue(height, weight));
+    }   catch (error: unknown) {
+    let errorMessage = 'Something bad happened.'
+    if (error instanceof Error) {
+        errorMessage += ' Error: ' + error.message;
     }
-}
-
-try {
-    const {value1, value2 } = parseArguments(process.argv);
-    bmiCalculator(value1, value2);
-}   catch (error: unknown) {
-  let errorMessage = 'Something bad happened.'
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
-  }
-  console.log(errorMessage);
+    console.log(errorMessage);
+    }
 }
