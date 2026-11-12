@@ -1,6 +1,7 @@
 import express from 'express';
 import { bmiValue } from './bmiCalculator.ts';
 import { calculate, type Operation } from './multiplier.ts';
+import { calculateExercises } from './exerciseCalculator.ts';
 
 const app = express();
 app.use(express.json());
@@ -68,7 +69,26 @@ app.get('/bmi', (req, res) => {
   });
 });
 
-const PORT = 3003;
+// ---------------------------------
+// ExerciseCalculator
+// ---------------------------------
+app.post('/exercises', (req, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { daily_exercises, target } = req.body;
+
+  // Validations...
+  if (!target && !daily_exercises) {
+    return res.status(400).send({ error: 'parameters missing'});
+  }
+  if (isNaN(Number(target)) || target < 0) {    
+     return res.status(400).send({ error: 'malformatted parameters'});
+  }
+
+  const result = calculateExercises(daily_exercises as number[], Number(target));
+  return res.json({ result });
+});
+
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

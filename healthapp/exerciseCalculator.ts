@@ -1,3 +1,5 @@
+import { pathToFileURL } from 'node:url';
+
 type Rating = 1 | 2 | 3;
 type Explanation = 'try harder next time' | 'not bad, but not good either' | 'very good, keep it up';
 
@@ -36,7 +38,7 @@ const parseExercice = (args: string[]): Exercice => {
     return { targetHours, hours};
 };
 
-const calculateExercises = (weekHours: number[], target: number): Summary => {
+export const calculateExercises = (weekHours: number[], target: number): Summary => {
   const periodLength = weekHours.length;
   let trainingDays = 0;
   let sum = 0;
@@ -78,13 +80,15 @@ const calculateExercises = (weekHours: number[], target: number): Summary => {
   };
 };
 
-try {
-  const {targetHours, hours} = parseExercice(process.argv);
-  console.log(calculateExercises(hours, targetHours));
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happened.';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  try {
+    const {targetHours, hours} = parseExercice(process.argv);
+    console.log(calculateExercises(hours, targetHours));
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }
