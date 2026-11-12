@@ -1,14 +1,14 @@
 import { pathToFileURL } from 'node:url';
 
 const parseArguments = (args: string[]): { height: number; weight: number } => {
-    const height = Number(args[2]);
-    const weight = Number(args[3]);
+  const height = Number(args[2]);
+  const weight = Number(args[3]);
 
-    if (!Number.isFinite(height) || !Number.isFinite(weight) || height <= 0 || weight <= 0) {
-        throw new Error('Numbers must be positive values');
-    }
+  if (!Number.isFinite(height) || !Number.isFinite(weight) || height <= 0 || weight <= 0) {
+    throw new Error('Numbers must be positive values');
+  }
 
-    return { height, weight };
+  return { height, weight };
 };
 
 export const bmiValue = (height: number, weight: number): string => {
@@ -25,13 +25,13 @@ export const bmiValue = (height: number, weight: number): string => {
 };
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-    try {
-        const { height, weight } = parseArguments(process.argv);
-        console.log(bmiValue(height, weight));
-    }   catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
+  try {
+    const { height, weight } = parseArguments(process.argv);
+    console.log(bmiValue(height, weight));
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened.';
     if (error instanceof Error) {
-        errorMessage += ' Error: ' + error.message;
+      errorMessage += ' Error: ' + error.message;
     }
     console.log(errorMessage);
     }

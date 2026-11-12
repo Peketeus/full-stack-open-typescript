@@ -1,94 +1,90 @@
-// 1 poor
-// 2 average
-// 3 good
 type Rating = 1 | 2 | 3;
-type Explanation = 'try harder next time' | 'not bad, but not good either' | 'very good, keep it up'
+type Explanation = 'try harder next time' | 'not bad, but not good either' | 'very good, keep it up';
 
 // result object
 interface Summary {
-    periodLength: number;
-    trainingDays : number;
-    success : boolean;
-    rating : Rating;
-    description : Explanation;
-    targetValue : number;
-    averageTime : number;
+  periodLength: number;
+  trainingDays : number;
+  success : boolean;
+  rating : Rating;
+  description : Explanation;
+  targetValue : number;
+  averageTime : number;
 }
 
 interface Exercice {
-    targetHours : number;
-    hours : number[];
+  targetHours : number;
+  hours : number[];
 }
 
 const parseExercice = (args: string[]): Exercice => {
-    const targetHours = Number(args[2]);
+  const targetHours = Number(args[2]);
 
-    if (Number.isNaN(targetHours)) {
-        throw new Error('Provided values were not numbers!');
+  if (Number.isNaN(targetHours)) {
+    throw new Error('Provided values were not numbers!');
+  }
+
+  const hours: number[] = [];
+
+  args.slice(3).forEach(arg => {
+    if (!isNaN(Number(arg))) {
+      hours.push(Number(arg));
+    } else {
+      throw new Error('Provided values were not numbers!');
     }
-
-    const hours: number[] = [];
-
-    args.slice(3).forEach(arg => {
-        if (!isNaN(Number(arg))) {
-            hours.push(Number(arg))
-        } else {
-            throw new Error('Provided values were not numbers!');
-        }
     });
-
-    return { targetHours, hours}
-}
+    return { targetHours, hours};
+};
 
 const calculateExercises = (weekHours: number[], target: number): Summary => {
-    const periodLength = weekHours.length;
-    let trainingDays = 0;
-    let sum = 0;
-    let rating: Rating;
-    let description: Explanation;
-    let success = false;
+  const periodLength = weekHours.length;
+  let trainingDays = 0;
+  let sum = 0;
+  let rating: Rating;
+  let description: Explanation;
+  let success = false;
 
-    weekHours.forEach(day => {
-        if (day > 0) {
-            trainingDays += 1;
-        }
-        sum += day;
-    });
+  weekHours.forEach(day => {
+    if (day > 0) {
+      trainingDays += 1;
+    }
+      sum += day;
+  });
 
-    const averageTime = sum / weekHours.length;
+  const averageTime = sum / weekHours.length;
 
-    if (averageTime < target / 2) {
-        rating = 1;
-        description = 'try harder next time';
-    }
-    else if (averageTime < target) {
-        rating = 2;
-        description = 'not bad, but not good either';
-    }
-    else {
-        rating = 3;
-        description = 'very good, keep it up';
-        success = true;
-    }
+  if (averageTime < target / 2) {
+    rating = 1;
+    description = 'try harder next time';
+  }
+  else if (averageTime < target) {
+    rating = 2;
+    description = 'not bad, but not good either';
+  }
+  else {
+    rating = 3;
+    description = 'very good, keep it up';
+    success = true;
+  }
 
-    return {
-        periodLength,
-        trainingDays,
-        success,
-        rating,
-        description,
-        targetValue: target,
-        averageTime
-    }
-}
+  return {
+    periodLength,
+    trainingDays,
+    success,
+    rating,
+    description,
+    targetValue: target,
+    averageTime
+  };
+};
 
 try {
-    const {targetHours, hours} = parseExercice(process.argv);
-    console.log(calculateExercises(hours, targetHours));
+  const {targetHours, hours} = parseExercice(process.argv);
+  console.log(calculateExercises(hours, targetHours));
 } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
-    if (error instanceof Error) {
-        errorMessage += ' Error: ' + error.message;
-    }
+  let errorMessage = 'Something bad happened.';
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
+  }
   console.log(errorMessage);
 }
