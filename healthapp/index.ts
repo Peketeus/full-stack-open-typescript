@@ -76,16 +76,34 @@ app.post('/exercises', (req, res) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { daily_exercises, target } = req.body;
 
-  // Validations...
-  if (!target && !daily_exercises) {
+  if (target === undefined || daily_exercises === undefined) {
     return res.status(400).send({ error: 'parameters missing'});
   }
-  if (isNaN(Number(target)) || target < 0) {    
-     return res.status(400).send({ error: 'malformatted parameters'});
+  if (
+    !Array.isArray(daily_exercises) ||
+    !daily_exercises.every((day: unknown) => typeof day === 'number')
+  ) {
+    return res.status(400).json({ error: 'malformatted parameters' });
+  }
+  if (
+    typeof target !== 'number' ||
+    !Number.isFinite(target)
+  ) {
+    return res.status(400).json({
+      error: 'malformatted parameters'
+    });
   }
 
-  const result = calculateExercises(daily_exercises as number[], Number(target));
-  return res.json({ result });
+  const result = calculateExercises(daily_exercises, Number(target));
+  return res.json({
+    periodLength: result.periodLength,
+    trainingDays: result.trainingDays,
+    success: result.success,
+    rating: result.rating,
+    ratingDescription: result.description,
+    target: result.targetValue,
+    average: result.averageTime
+  });
 });
 
 const PORT = 3000;

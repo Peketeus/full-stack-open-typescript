@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'node:url';
 
 type Rating = 1 | 2 | 3;
-type Explanation = 'try harder next time' | 'not bad, but not good either' | 'very good, keep it up';
+type Explanation = 'bad' | 'not too bad but could be better' | 'very good, keep it up';
 
 // result object
 interface Summary {
@@ -57,11 +57,11 @@ export const calculateExercises = (weekHours: number[], target: number): Summary
 
   if (averageTime < target / 2) {
     rating = 1;
-    description = 'try harder next time';
+    description = 'bad';
   }
   else if (averageTime < target) {
     rating = 2;
-    description = 'not bad, but not good either';
+    description = 'not too bad but could be better';
   }
   else {
     rating = 3;
